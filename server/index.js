@@ -7,8 +7,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:5173", "http://10.6.2.29:5173"],
-  methods: ["GET", "POST"],
+  origin: 'http://10.6.2.29:5173',
   credentials: true
 }));
 
@@ -20,8 +19,7 @@ app.get('/games.json', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://10.6.2.29:5173"],
-    methods: ["GET", "POST"],
+    origin: 'http://10.6.2.29:5173',
     credentials: true
   }
 });
@@ -64,6 +62,25 @@ function checkAnswer(level, playerId, answer) {
   const expectedResponseStr = String(expectedResponse).trim().toLowerCase().replace(/\s+/g, '');
 
   return expectedResponseStr === answerStr;
+}
+
+// Gestion des salles d'attente
+const waitingRooms = new Map();
+
+// Fonction pour trouver ou créer une salle d'attente
+function findOrCreateWaitingRoom() {
+  for (const [roomId, room] of waitingRooms.entries()) {
+    if (room.players.size < 4) {
+      return roomId;
+    }
+  }
+  // Créer une nouvelle salle si aucune n'est disponible
+  const newRoomId = `room_${waitingRooms.size + 1}`;
+  waitingRooms.set(newRoomId, {
+    players: new Set(),
+    roles: new Map()
+  });
+  return newRoomId;
 }
 
 // Gestion des connexions
@@ -185,9 +202,38 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Un client s\'est déconnecté');
-    // Trouver et nettoyer la salle du joueur déconnecté
+    
+    // Gérer la déconnexion dans la salle d'attente
+    for (const [roomId, room] of waitingRooms.entries()) {
+      // Trouver le playerId associé à ce socket
+      const playerId = Array.from(room.roles.entries())
+        .find(([_, role]) => role === `player${socket.id}`)?.[0];
+      
+      if (playerId) {
+        console.log(`${playerId} a quitté la salle d'attente ${roomId}`);
+        room.players.delete(playerId);
+        room.roles.delete(playerId);
+        
+        // Si la salle est vide, la supprimer
+        if (room.players.size === 0) {
+          console.log(`Suppression de la salle d'attente ${roomId} car vide`);
+          waitingRooms.delete(roomId);
+        } else {
+          // Sinon, mettre à jour le statut des autres joueurs
+          console.log(`Mise à jour du statut des joueurs dans la salle ${roomId}`);
+          io.to(roomId).emit('PLAYERS_STATUS', {
+            connectedPlayers: Array.from(room.players),
+            roomId: roomId
+          });
+        }
+        break;
+      }
+    }
+
+    // Gérer la déconnexion dans la salle de jeu
     for (const [roomId, room] of Object.entries(gameState.rooms)) {
       if (room.players.has(socket.id)) {
+        console.log(`${socket.id} a quitté la salle de jeu ${roomId}`);
         room.players.delete(socket.id);
         room.submissions.delete(socket.id);
         room.errorCounts.delete(socket.id);
@@ -201,6 +247,34 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
         break;
       }
+    }
+  });
+
+  socket.on('JOIN_WAITING_ROOM', (data) => {
+    const { playerId, role } = data;
+    const roomId = findOrCreateWaitingRoom();
+    const room = waitingRooms.get(roomId);
+
+    // Ajouter le joueur à la salle avec son playerId
+    room.players.add(playerId);
+    room.roles.set(playerId, role);
+
+    // Rejoindre la salle socket.io
+    socket.join(roomId);
+
+    // Émettre le statut des joueurs à tous les joueurs de la salle
+    io.to(roomId).emit('PLAYERS_STATUS', {
+      connectedPlayers: Array.from(room.players),
+      roomId: roomId
+    });
+
+    // Si la salle est pleine, démarrer le jeu après 5 secondes
+    if (room.players.size === 4) {
+      setTimeout(() => {
+        io.to(roomId).emit('GAME_START');
+        // Nettoyer la salle d'attente
+        waitingRooms.delete(roomId);
+      }, 5000);
     }
   });
 });

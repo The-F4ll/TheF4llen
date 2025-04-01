@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import io from 'socket.io-client';
 
-function PlayerBase({ playerNumber, role, color }) {
+function PlayerBase() {
+  const { playerNumber } = useParams();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [timeLeft, setTimeLeft] = useState(900000); // 15 minutes en millisecondes
   const [gameData, setGameData] = useState(null);
@@ -18,12 +19,34 @@ function PlayerBase({ playerNumber, role, color }) {
   const [errorCounts, setErrorCounts] = useState({});
   const socketRef = useRef(null);
 
+  // Déterminer la couleur en fonction du numéro de joueur
+  const getColor = (num) => {
+    const colors = {
+      1: 'blue',
+      2: 'green',
+      3: 'purple',
+      4: 'red'
+    };
+    return colors[num] || 'gray';
+  };
+
+  // Déterminer le rôle en fonction du numéro de joueur
+  const getRole = (num) => {
+    const roles = {
+      1: 'Le Calculateur d\'Angles',
+      2: 'Le Calculateur de Force',
+      3: 'Le Physicien',
+      4: 'Le Vérificateur de Stabilité'
+    };
+    return roles[num] || 'Joueur';
+  };
+
   // Timer pour la disparition automatique du message
   useEffect(() => {
     if (feedback.message) {
       const timer = setTimeout(() => {
         setFeedback({ type: '', message: '' });
-      }, 5000); // Le message disparaît après 5 secondes
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -34,7 +57,13 @@ function PlayerBase({ playerNumber, role, color }) {
     fetch('/games.json')
       .then(response => response.json())
       .then(data => setGameData(data))
-      .catch(error => console.error('Erreur lors du chargement des données:', error));
+      .catch(error => {
+        console.error('Erreur lors du chargement des données:', error);
+        setFeedback({
+          type: 'error',
+          message: 'Erreur lors du chargement des données du jeu'
+        });
+      });
 
     // Connexion WebSocket
     socketRef.current = io('http://10.6.2.29:3001', {
@@ -59,9 +88,9 @@ function PlayerBase({ playerNumber, role, color }) {
       setCurrentLevel(data.level);
       setTimeLeft(data.timeLeft);
       setFeedback({ type: '', message: '' });
-      setAnswer(''); // Réinitialiser la réponse pour le nouveau niveau
-      setSubmittedPlayers(new Set()); // Réinitialiser l'état des joueurs
-      setErrorCounts({}); // Réinitialiser le compteur d'erreurs
+      setAnswer('');
+      setSubmittedPlayers(new Set());
+      setErrorCounts({});
     });
 
     socketRef.current.on('TIME_UPDATE', (data) => {
@@ -106,7 +135,7 @@ function PlayerBase({ playerNumber, role, color }) {
   useEffect(() => {
     if (gameData) {
       const currentLevelData = gameData.levels.find(level => level.level === currentLevel);
-      if (currentLevelData) {
+      if (currentLevelData && currentLevelData.players[playerNumber]) {
         setCode(currentLevelData.players[playerNumber].code);
       }
     }
@@ -137,10 +166,23 @@ function PlayerBase({ playerNumber, role, color }) {
   }
 
   const currentLevelData = gameData.levels.find(level => level.level === currentLevel);
+  if (!currentLevelData) {
+    return (
+      <div className={`min-h-screen bg-${getColor(playerNumber)}-900 text-white p-4 flex items-center justify-center`}>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Erreur</h1>
+          <p className="text-xl mb-8">Niveau non trouvé</p>
+          <Link to="/" className="btn btn-primary">
+            Retour à l'accueil
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (isGameOver) {
     return (
-      <div className={`min-h-screen bg-${color}-900 text-white p-4 flex items-center justify-center`}>
+      <div className={`min-h-screen bg-${getColor(playerNumber)}-900 text-white p-4 flex items-center justify-center`}>
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">
             {timeLeft === 0 ? '⏰ Temps écoulé !' : '🎉 Félicitations !'}
@@ -150,10 +192,7 @@ function PlayerBase({ playerNumber, role, color }) {
               ? 'Le temps est écoulé. Vous pouvez recommencer en rafraîchissant la page.'
               : 'Vous avez atteint le sommet du Mont Seraph !'}
           </p>
-          <Link 
-            to="/" 
-            className="btn btn-primary"
-          >
+          <Link to="/" className="btn btn-primary">
             Retour à l'accueil
           </Link>
         </div>
@@ -162,7 +201,7 @@ function PlayerBase({ playerNumber, role, color }) {
   }
 
   return (
-    <div className={`min-h-screen bg-${color}-900 text-white p-4`}>
+    <div className={`min-h-screen bg-${getColor(playerNumber)}-900 text-white p-4`}>
       <div className="max-w-6xl mx-auto">
         {/* Barre d'état flottante */}
         <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
@@ -225,7 +264,7 @@ function PlayerBase({ playerNumber, role, color }) {
             <div className="space-y-6">
               <div className="card">
                 <h1 className="text-3xl font-bold mb-4">
-                  {role} - Niveau {currentLevel}
+                  {getRole(playerNumber)} - Niveau {currentLevel}
                 </h1>
                 <div className="space-y-4">
                   <div>
