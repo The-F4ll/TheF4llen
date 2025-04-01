@@ -1,0 +1,57 @@
+{
+  "rooms": {
+    "game1": {
+      "players": [
+        "player2",
+        "player3",
+        "player4"
+      ],
+      "level": 1,
+      "timeLeft": 900000,
+      "submissions": [],
+      "completedLevels": [],
+      "scores": [
+        [
+          "player2",
+          0
+        ],
+        [
+          "player3",
+          0
+        ],
+        [
+          "player4",
+          0
+        ]
+      ],
+      "errors": [
+        [
+          "player2",
+          0
+        ],
+        [
+          "player3",
+          0
+        ],
+        [
+          "player4",
+          0
+        ]
+      ],
+      "playerColors": [
+        [
+          "player2",
+          "#FF6B6B"
+        ],
+        [
+          "player3",
+          "#4ECDC4"
+        ],
+        [
+          "player4",
+          "#96CEB4"
+        ]
+      ]
+    }
+  }
+}

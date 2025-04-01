@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4F46E5;
+  --primary-light: #6366F1;
+  --primary-lighter: #818CF8;
+  --primary-lightest: #A5B4FC;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-gray-900 text-white;
+}
+
+.mountain-bg {
+  background: linear-gradient(to bottom, #1E1B4B, #312E81);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.mountain-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/mountain.svg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.progress-bar {
+  @apply h-2 bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full bg-primary transition-all duration-500;
+}
+
+.code-editor {
+  @apply bg-gray-800 rounded-lg p-4 font-mono text-sm;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary-light text-white;
+}
+
+.btn-secondary {
+  @apply bg-gray-700 hover:bg-gray-600 text-white;
+}
+
+.input {
+  @apply bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.card {
+  @apply bg-gray-800 rounded-lg p-6 shadow-lg;
+}
+
+.feedback {
+  @apply p-4 rounded-lg mb-4;
+}
+
+.feedback-success {
+  @apply bg-green-500/20 text-green-400;
+}
+
+.feedback-error {
+  @apply bg-red-500/20 text-red-400;
+}
+
+.hint {
+  @apply bg-gray-700/50 rounded-lg p-4 text-gray-300;
+}
+
+/* Animations personnalisées */
+.animate-climb {
+  animation: climb 2s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Styles pour l'éditeur Monaco */
+.monaco-editor {
+  @apply rounded-lg overflow-hidden;
+}
+
+/* Styles pour les avatars des joueurs */
+.player-avatar {
+  @apply w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center text-xl font-bold;
+}
+
+.player-avatar.active {
+  @apply bg-mountain-accent;
+}
+
+/* Styles pour les messages */
+.message {
+  @apply p-4 rounded-lg mb-4;
+}
+
+.message-success {
+  @apply bg-green-500 text-white;
+}
+
+.message-error {
+  @apply bg-red-500 text-white;
+}
+
+.message-info {
+  @apply bg-blue-500 text-white;
+}
