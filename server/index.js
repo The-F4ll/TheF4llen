@@ -7,7 +7,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors({
-  origin: 'http://10.6.2.29:5173',
+  origin: '*',
   credentials: true
 }));
 
@@ -19,7 +19,7 @@ app.get('/games.json', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://10.6.2.29:5173',
+    origin: '*',
     credentials: true
   }
 });
