@@ -29,7 +29,7 @@ const io = new Server(server, {
 // État du jeu
 const gameState = {
   rooms: {},
-  timeLeft: 180000, // 3 minutes en millisecondes
+  timeLeft: 900000, // 15 minutes en millisecondes
   currentLevel: 1
 };
 
@@ -41,10 +41,11 @@ function createGame(roomId) {
   gameState.rooms[roomId] = {
     players: new Set(),
     level: 1,
-    timeLeft: 180000,
+    timeLeft: 900000,
     timer: null,
     submissions: new Map(),
-    completedLevels: new Set()
+    completedLevels: new Set(),
+    errorCounts: new Map() // Pour suivre le nombre d'erreurs par joueur
   };
 }
 
@@ -58,27 +59,11 @@ function checkAnswer(level, playerId, answer) {
   console.log("expectedResponse", expectedResponse);
   console.log("answer", answer);
 
-  // Si la réponse attendue est un tableau
-  if (Array.isArray(expectedResponse)) {
-    // Essayer de parser la réponse si c'est une chaîne JSON
-    let parsedAnswer = answer;
-    try {
-      if (typeof answer === 'string') {
-        parsedAnswer = JSON.parse(answer);
-      }
-    } catch (e) {
-      return false;
-    }
+  // Convertir la réponse en string et la nettoyer
+  const answerStr = String(answer).trim().toLowerCase().replace(/\s+/g, '');
+  const expectedResponseStr = String(expectedResponse).trim().toLowerCase().replace(/\s+/g, '');
 
-    // Vérifier que les deux tableaux ont la même longueur et les mêmes valeurs
-    if (!Array.isArray(parsedAnswer) || parsedAnswer.length !== expectedResponse.length) {
-      return false;
-    }
-    return parsedAnswer.every((val, index) => val === expectedResponse[index]);
-  }
-  
-  // Sinon, faire une comparaison stricte
-  return answer === expectedResponse;
+  return expectedResponseStr === answerStr;
 }
 
 // Gestion des connexions
@@ -106,6 +91,14 @@ io.on('connection', (socket) => {
       level: room.level,
       timeLeft: room.timeLeft
     });
+
+    // Envoyer l'état des joueurs à tous les joueurs de la salle
+    const playersStatus = {
+      connectedPlayers: Array.from(room.players),
+      submittedPlayers: Array.from(room.submissions.keys()),
+      errorCounts: Object.fromEntries(room.errorCounts)
+    };
+    io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
   });
 
   socket.on('SUBMIT_CODE', ({ roomId, playerId, code }) => {
@@ -115,11 +108,19 @@ io.on('connection', (socket) => {
     if (!room) return;
 
     try {
-      // Vérifier directement la réponse sans exécuter de code
       const isCorrect = checkAnswer(room.level, playerId, code);
 
       if (isCorrect) {
         room.submissions.set(playerId, code);
+        room.errorCounts.set(playerId, 0); // Réinitialiser le compteur d'erreurs
+        
+        // Envoyer l'état des réponses à tous les joueurs de la salle
+        const playersStatus = {
+          connectedPlayers: Array.from(room.players),
+          submittedPlayers: Array.from(room.submissions.keys()),
+          errorCounts: Object.fromEntries(room.errorCounts)
+        };
+        io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
         
         // Si tous les joueurs ont soumis une réponse correcte
         if (room.submissions.size === room.players.size) {
@@ -147,11 +148,35 @@ io.on('connection', (socket) => {
           });
         }
       } else {
+        // Incrémenter le compteur d'erreurs
+        const currentErrors = room.errorCounts.get(playerId) || 0;
+        room.errorCounts.set(playerId, currentErrors + 1);
+        
+        // Envoyer l'état mis à jour
+        const playersStatus = {
+          connectedPlayers: Array.from(room.players),
+          submittedPlayers: Array.from(room.submissions.keys()),
+          errorCounts: Object.fromEntries(room.errorCounts)
+        };
+        io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
+        
         socket.emit('LEVEL_FAILED', {
           message: 'Votre réponse est incorrecte. Essayez encore !'
         });
       }
     } catch (error) {
+      // Incrémenter le compteur d'erreurs
+      const currentErrors = room.errorCounts.get(playerId) || 0;
+      room.errorCounts.set(playerId, currentErrors + 1);
+      
+      // Envoyer l'état mis à jour
+      const playersStatus = {
+        connectedPlayers: Array.from(room.players),
+        submittedPlayers: Array.from(room.submissions.keys()),
+        errorCounts: Object.fromEntries(room.errorCounts)
+      };
+      io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
+      
       socket.emit('LEVEL_FAILED', {
         message: 'Erreur dans votre réponse : ' + error.message
       });
@@ -160,6 +185,23 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Un client s\'est déconnecté');
+    // Trouver et nettoyer la salle du joueur déconnecté
+    for (const [roomId, room] of Object.entries(gameState.rooms)) {
+      if (room.players.has(socket.id)) {
+        room.players.delete(socket.id);
+        room.submissions.delete(socket.id);
+        room.errorCounts.delete(socket.id);
+        
+        // Envoyer l'état mis à jour aux autres joueurs
+        const playersStatus = {
+          connectedPlayers: Array.from(room.players),
+          submittedPlayers: Array.from(room.submissions.keys()),
+          errorCounts: Object.fromEntries(room.errorCounts)
+        };
+        io.to(roomId).emit('PLAYERS_STATUS', playersStatus);
+        break;
+      }
+    }
   });
 });
 

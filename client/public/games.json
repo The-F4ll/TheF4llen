@@ -3,105 +3,18 @@
     {
       "level": 1,
       "description": {
-        "name": "🧩 Niveau ~~ – La Clé de l'Aube Silencieuse",
-        "etape": "📍 Étape 1 : La Pente Inaccessible",
-        "lore": "📜 Le Mont Seraph vous observe. Devant vous, un ancien portail taillé dans la pierre céleste. Il est verrouillé par une Clé de l'Aube. La légende raconte que cette clé ne peut être forgée que lorsque les quatre grimpeurs découvrent le bon rythme sacré. Mais aucun d'eux ne détient la mélodie complète…",
-        "mechanics": "🧠 Chaque joueur a une fonction appelée getNote() (ou équivalent) qui retourne une valeur textuelle. Le but est de reconstituer une suite logique (ex : 3 - 6 - 9 - 12).",
-        "variantes": [
-          "Un joueur a une note fausse (volontairement trompeuse)",
-          "Un joueur a une formule logique (playerIndex * 3)",
-          "Un joueur a une information cryptée (ex : 21 → reverse → 12)",
-          "Un joueur suit une fausse logique mathématique (ascii C → 67 / 3 = 22.33)"
-        ],
-        "objectif": "➡️ Pour réussir, ils doivent comparer leurs réponses textuelles, repérer le leurre, et reconstruire une suite logique complète et cohérente : 3, 6, 9, 12.",
-        "solution_strategy": [
-          "Repérer que le joueur 1 propose une valeur isolée ('2') qui ne suit aucun motif clair.",
-          "Le joueur 2 donne une formule : 'playerIndex * 3' → en testant avec l'indice 1 à 4, on trouve 3, 6, 9, 12.",
-          "Le joueur 3 fournit une explication cryptée : '21 → reverse → 12' → c'est cohérent avec une fin de séquence.",
-          "Le joueur 4 croit avoir raison avec 'C = 67 → 67 / 3 = 22.33' → mais la valeur n'est pas entière, donc fausse."
-        ],
-        "final_goal": "🔓 En croisant ces infos, ils doivent conclure que la suite est : 3, 6, 9, 12."
-      },
-
-      "players": {
-        "1": {
-          "role": "Le Faux Héros",
-          "code": "function getNote() {\n  return '2';\n}\n\nfunction solve() {\n  return getNote();\n}",
-          "hint": "Tu es peut-être le début... ou peut-être un leurre. Écoute les autres pour en être sûr."
-        },
-
-        "2": {
-          "role": "Le Forgeron du Savoir",
-          "code": "function getNoteOf(playerIndex) {\n  return 'playerIndex * 3';\n}\n\nfunction solve() {\n  return getNoteOf(2); // → '6'\n}",
-          "hint": "Tu détiens la formule, mais sa cible n'est pas claire. Tu es la clé mathématique."
-        },
-
-        "3": {
-          "role": "L'Explorateur du Tableau",
-          "code": "function getNote() {\n  return '21 → reverse → 12';\n}\n\nfunction solve() {\n  return getNote();\n}",
-          "hint": "Le savoir est écrit à l'envers… à toi de le remettre dans le bon sens."
-        },
-
-        "4": {
-          "role": "Le Sage des Archives",
-          "code": "function getNote() {\n  return 'C = 67 → 67 / 3 = 22.33';\n}\n\nfunction solve() {\n  return getNote();\n}",
-          "hint": "Tu crois suivre une logique sacrée... mais elle est erronée. Les anciens chiffres te jouent des tours."
-        }
-      },
-
-      "response": ["3", "6", "9", "12"]
-    },
-    {
-      "level": 2,
-      "description": {
-        "name": "🧩 Niveau ~~ – Le Gardien du Labyrinthe Cornu",
-        "etape": "📍 Étape 2 : Le Ravin des Ombres",
-        "lore": "📜 Les ombres dansent entre les murs invisibles du Ravin. On raconte qu'un animal mystique garde le passage, et que ceux qui ne le reconnaissent pas tomberont dans le vide éternel…",
-        "mechanics": "🧠 Chaque joueur détient un indice fragmentaire sur l'identité de la créature mystique (Minotaure). Un seul joueur détient la vraie chaîne, mais elle est cachée. Un autre a un tableau de 50 créatures avec des ID cryptés, un autre un faux indice, un autre une énigme."
-      },
-
-      "players": {
-        "1": {
-          "role": "Le Faux Héros",
-          "code": "function getMysticAnimal() {\n  return 'Licorne';\n}\n\nfunction solve() {\n  return getMysticAnimal();\n}",
-          "hint": "Ta fonction a l'air fiable... mais garde l'esprit ouvert."
-        },
-
-        "2": {
-          "role": "Le Forgeron du Savoir",
-          "code": "function getSecretLetter() {\n  return 'M'; // ASCII 77\n}\n\nfunction solve() {\n  return getSecretLetter();\n}",
-          "hint": "Tu détiens la clé d'identification. Mais ce n'est qu'une lettre."
-        },
-
-        "3": {
-          "role": "L'Explorateur du Tableau",
-          "code": "const creatures = [\n  { id: 'D', name: 'Dragon' },\n  { id: 'G', name: 'Griffon' },\n  { id: 'L', name: 'Licorne' },\n  { id: 'M', name: 'Minotaure' },\n  { id: 'P', name: 'Phénix' },\n  { id: 'C', name: 'Chimère' },\n  { id: 'S', name: 'Sirène' },\n  { id: 'H', name: 'Hippogriffe' },\n  { id: 'A', name: 'Ankou' },\n  { id: 'K', name: 'Kraken' }\n];\n\nfunction solve() {\n  return \"creatures.find(c => c.id === 'M').name → Minotaure\";\n}",
-          "hint": "Quelqu'un connaît l'identifiant. Toi seul peux t'en servir."
-        },
-        "4": {
-          "role": "Le Sage des Archives",
-          "code": "// 📜 Il est dit qu'une bête cornue, enfermée dans un labyrinthe,\n// était autrefois vénérée comme un être mystique.\n// 🧠 Indice : Sa force égale sa confusion.\n\nfunction solve() {\n  return ''; // Réserve ta voix pour ceux qui écoutent.\n}",
-          "hint": "Les anciens textes parlent d'un être légendaire... interprète bien."
-        }
-      },
-
-      "response": "Minotaure"
-    },
-    {
-      "level": 3,
-      "description": {
         "name": "🧩 Niveau ~~ – La Stèle des Fragments Perdus",
-        "etape": "📍 Étape 3 : Le Pont Suspendu",
-        "lore": "📜 Devant vous, une stèle ancienne taillée dans le roc céleste. Elle contient une incantation brisée, nécessaire pour activer le Pont Suspendu. Mais les mots sont éparpillés, mélangés, et protégés par une magie ancienne. Chacun d'entre vous détient une partie de la phrase sacrée… mais vous ne connaissez pas votre place dans l'ordre.",
+        "etape": "📍 Étape 1 : Le Pont Suspendu",
+        "lore": "📜 Devant vous, une stèle ancienne taillée dans le roc céleste. Elle contient une incantation brisée, nécessaire pour activer le Pont Suspendu. Mais les mots sont éparpillés, mélangés, et protégés par une magie ancienne. Chacun d’entre vous détient une partie de la phrase sacrée… mais vous ne connaissez pas votre place dans l’ordre.",
         "mechanics": "🧠 Chaque joueur possède un fragment de la phrase complète. Le bon ordre est essentiel. Un seul fragment est faux, les autres doivent être combinés correctement. Certains mots sont volontairement ambigus ou ressemblants.",
-        "objectif": "➡️ Reconstituer la phrase : Ouvrez la porte du cœur du Mont Seraph, scellé dans la brume éternelle de la lumière sacrée des anciens.",
+        "objectif": "➡️ Reconstituer la phrase : Ouvrez la porte du coeur du Mont Seraph, scellé dans la brume éternelle de la lumière sacrée des anciens.",
         "solution_strategy": [
           "Le joueur 1 a un fragment correct sur la forme mais hors-contexte ('brume éternelle de la').",
           "Le joueur 2 contient un mot transformé ('porte' écrit 'prt' dans certains fichiers), il faudra confirmer avec les autres.",
-          "Le joueur 3 possède des mots à l'intérieur du texte entier, mais doit être confirmé par la cohérence de la syntaxe.",
-          "Le joueur 4 a un texte dans un fichier externe contenant un avertissement : ne peut être utilisé qu'en dernier."
+          "Le joueur 3 possède des mots à l’intérieur du texte entier, mais doit être confirmé par la cohérence de la syntaxe.",
+          "Le joueur 4 a un texte dans un fichier externe contenant un avertissement : ne peut être utilisé qu’en dernier."
         ],
-        "final_goal": "🔓 L'équipe doit éliminer l'intrus, mettre en ordre les bons fragments et révéler la phrase mystique."
+        "final_goal": "🔓 L’équipe doit éliminer l’intrus, mettre en ordre les bons fragments et révéler la phrase mystique."
       },
 
       "players": {
@@ -118,7 +31,7 @@
         },
 
         "3": {
-          "role": "L'Explorateur du Noyau",
+          "role": "L’Explorateur du Noyau",
           "code": "Fragment proposé : 'coeur du Mont Seraph, scellé dans la brume éternelle de la'\n\nNote : Long fragment, mais les virgules et la syntaxe doivent être vérifiées avec celui du début.",
           "hint": "Tu as beaucoup d'informations, mais pas la totalité. Travaille la ponctuation avec les autres."
         },
@@ -126,20 +39,57 @@
         "4": {
           "role": "Le Sage des Archives",
           "code": "Fichier : stèle_fragment_final.txt\n\nContenu : 'lumière sacrée des anciens.'\n\nAvertissement : Ce fragment est marqué 'FINALEMENT' dans les marges sacrées.",
-          "hint": "Tu dois être le dernier à parler. Ton fragment est authentique, mais sensible à l'ordre."
+          "hint": "Tu dois être le dernier à parler. Ton fragment est authentique, mais sensible à l’ordre."
         }
       },
 
       "response": "Ouvrez la porte du coeur du Mont Seraph, scellé dans la brume éternelle de la lumière sacrée des anciens."
     },
     {
-      "level": 4,
+      "level": 2,
+      "description": {
+        "name": "🧩 Niveau ~~ – Le Gardien du Labyrinthe Cornu",
+        "etape": "📍 Étape 2 : Le Ravin des Ombres",
+        "lore": "📜 Les ombres dansent entre les murs invisibles du Ravin. On raconte qu’un animal mystique garde le passage, et que ceux qui ne le reconnaissent pas tomberont dans le vide éternel…",
+        "mechanics": "🧠 Chaque joueur détient un indice fragmentaire sur l’identité de la créature mystique (Minotaure). Un seul joueur détient la vraie chaîne, mais elle est cachée. Un autre a un tableau de 50 créatures avec des ID cryptés, un autre un faux indice, un autre une énigme.",
+        "objectif": "➡️ Trouver l'animal mystique secret"
+      },
+
+      "players": {
+        "1": {
+          "role": "Le Faux Héros",
+          "code": "function getMysticAnimal() {\n  return 'Licorne';\n}\n\nfunction solve() {\n  return getMysticAnimal();\n}",
+          "hint": "Ta fonction a l'air fiable... mais garde l'esprit ouvert."
+        },
+
+        "2": {
+          "role": "Le Forgeron du Savoir",
+          "code": "function getSecretLetter() {\n  return 'M'; // ASCII 77\n}\n\nfunction solve() {\n  return getSecretLetter();\n}",
+          "hint": "Tu détiens la clé d'identification. Mais ce n’est qu’une lettre."
+        },
+
+        "3": {
+          "role": "L’Explorateur du Tableau",
+          "code": "const creatures = [\n  { id: 'D', name: 'Dragon' },\n  { id: 'G', name: 'Griffon' },\n  { id: 'L', name: 'Licorne' },\n  { id: 'M', name: 'Minotaure' },\n  { id: 'P', name: 'Phénix' },\n  { id: 'C', name: 'Chimère' },\n  { id: 'S', name: 'Sirène' },\n  { id: 'H', name: 'Hippogriffe' },\n  { id: 'A', name: 'Ankou' },\n  { id: 'K', name: 'Kraken' }\n];\n\nfunction solve() {\n  return \"creatures.find(c => c.id === 'M').name → Minotaure\";\n}",
+          "hint": "Quelqu’un connaît l’identifiant. Toi seul peux t’en servir."
+        },
+        "4": {
+          "role": "Le Sage des Archives",
+          "code": "// 📜 Il est dit qu’une bête cornue, enfermée dans un labyrinthe,\n// était autrefois vénérée comme un être mystique.\n// 🧠 Indice : Sa force égale sa confusion.\n\nfunction solve() {\n  return ''; // Réserve ta voix pour ceux qui écoutent.\n}",
+          "hint": "Les anciens textes parlent d’un être légendaire... interprète bien."
+        }
+      },
+
+      "response": "Minotaure"
+    },
+    {
+      "level": 3,
       "description": {
         "name": "🧩 Niveau ~~ – La Tempête de Glace Éternelle",
-        "etape": "📍 Étape 4 : La Crête de Givre",
+        "etape": "📍 Étape  : La Tempête de glace",
         "lore": "📜 Vous êtes désormais presque au sommet. Le vent hurle, la neige vous aveugle. Des glyphes gelés sont gravés dans la paroi. Chacun en voit une partie différente. Pour progresser, il faudra activer le bon enchaînement de glyphes… dans le bon ordre, sans doublons, et sans erreurs.",
         "mechanics": "🧠 Chaque joueur reçoit une rune à interpréter. Un seul glyphe par joueur est correct, les autres sont des illusions. Pour valider, ils doivent tous sélectionner en même temps une rune différente. Seules certaines combinaisons sont valides.",
-        "objectif": "➡️ Retrouver les quatre glyphes sacrés : Aurum, Ventus, Glacies, Lux. Chaque joueur en possède un sans le savoir.",
+        "objectif": "➡️ Compléter le glyche manquant : A....m, ... , Glacies, L...",
         "solution_strategy": [
           "Repérer que certains glyphes sont redondants ou se ressemblent (ex : Umbralux, Umbra).",
           "Un joueur possède un glyphe inversé (Ventus → susnetV), un autre un code hexadécimal (Lux).",
@@ -157,32 +107,82 @@
 
         "2": {
           "role": "Le Voyageur Inversé",
-          "code": "Glyphes inversés : susnetV, snigI, seicalG\n\nIndice : 'susnetV' à l'envers → 'Ventus'\n\nUn mot inversé semble parfait... mais il faut le confirmer.",
-          "hint": "Retourne les glyphes gelés dans ta tête. L'un d'eux est bien plus qu'un mirage."
+          "code": "Glyphes inversés : susnetV, \n Un mot inversé semble parfait... mais il faut le confirmer.",
+          "hint": "Retourne les glyphes gelés dans ta tête."
         },
 
         "3": {
-          "role": "L'Enchanteur des Fragments",
-          "code": "Glyphes numériques : 558 → ?\n\nÉquation ancienne : 'G = 71 + 0', 'l' = 108, 'a' = 97... → tout mène à Glacies\n\nTon glyphe est défini par la somme de ses lettres.",
+          "role": "L’Enchanteur des Fragments",
+          "code": "Tout mène à Glacies\n",
           "hint": "Additionne les forces des lettres, et tu trouveras une vérité cristalline."
         },
 
         "4": {
           "role": "Le Gardien de la Lumière",
-          "code": "Code sacré : ['0x4C', '0x75', '0x78']\n\nTraduction hexadécimale : L u x\n\nTon glyphe est caché dans les chiffres anciens.",
-          "hint": "Lis les symboles comme des nombres divins. Ils forment un mot lumineux."
+          "code": "Code sacré : ['0x4C', '0x75', '0x78']\n\n",
+          "hint": "lEURS uSAGES ANCIENS ExIGENT UNE EXPLORATION MINUTIEUSE."
         }
       },
 
-      "response": ["Aurum", "Ventus", "Glacies", "Lux"]
+      "response": "Aurum, Ventus , Glacies, Lux"
+    },
+    {
+      "level": 4,
+      "description": {
+        "name": "🧩 Niveau ~~ – La Clé de l’Aube Silencieuse",
+        "etape": "📍 Étape 4 : La Pente Inaccessible",
+        "lore": "📜 Le Mont Seraph vous observe. Devant vous, un ancien portail taillé dans la pierre céleste. Il est verrouillé par une Clé de l’Aube. La légende raconte que cette clé ne peut être forgée que lorsque les quatre grimpeurs découvrent le bon rythme sacré. Mais aucun d’eux ne détient la mélodie complète…",
+        "mechanics": "🧠 Chaque joueur a une fonction appelée getNote() (ou équivalent) qui retourne une valeur textuelle. Le but est de reconstituer une suite logique (ex : 3 - 6 - 9 - 12).",
+        "variantes": [
+          "Un joueur a une note fausse (volontairement trompeuse)",
+          "Un joueur a une formule logique (playerIndex * 3)",
+          "Un joueur a une information cryptée (ex : 21 → reverse → 12)",
+          "Un joueur suit une fausse logique mathématique (ascii C → 67 / 3 = 22.33)"
+        ],
+        "objectif": "➡️ Pour réussir, ils doivent comparer leurs réponses textuelles, pour former un nombre à 4 chiffres d'une suite logique.",
+        "solution_strategy": [
+          "Repérer que le joueur 1 propose une valeur isolée ('2') qui ne suit aucun motif clair.",
+          "Le joueur 2 donne une formule : 'playerIndex * 3' → en testant avec l’indice 1 à 4, on trouve 3, 6, 9, 12.",
+          "Le joueur 3 fournit une explication cryptée : '21 → reverse → 12' → c’est cohérent avec une fin de séquence.",
+          "Le joueur 4 croit avoir raison avec 'C = 67 → 67 / 3 = 22.33' → mais la valeur n’est pas entière, donc fausse."
+        ],
+        "final_goal": "🔓 En croisant ces infos, ils doivent conclure que la suite est : 3, 6, 9, 12."
+      },
+
+      "players": {
+        "1": {
+          "role": "Le Faux Héros",
+          "code": "function getNote() {\n  return {2\n}",
+          "hint": "Tu es peut-être le début... ou peut-être un leurre. Écoute les autres pour en être sûr."
+        },
+
+        "2": {
+          "role": "Le Forgeron du Savoir",
+          "code": "function partOfResult() {\n  return 'getNote() * 3';\n}\n",
+          "hint": "Tu détiens la formule, mais sa cible n’est pas claire. Tu es la clé mathématique."
+        },
+        "3": {
+          "role": "L’Explorateur du Tableau",
+          "code": "function reverseNumber(n) {\n  return parseInt(n.toString().split('').reverse().join(''), 10);\n}\n\nfunction getResult(n) {\n  const reversed = reverseNumber(n);\n  return reversed;\n}",
+          "hint": "Que donnerait getResult(21) ? "
+        },
+
+        "4": {
+          "role": "Le Sage des Archives",
+          "code": "Le Forgeron du Savoir à la 2 ème valeur,\n L’Explorateur du Tableau à la 4 ème valeur, \n A toi de déterminer les valeurs\n de la suite logique . ",
+          "hint": "Les chiffres qui composent ma suite sont des multiples de 3. "
+        }
+      },
+
+      "response": "3,6,9,12"
     },
     {
       "level": 5,
       "description": {
-        "name": "🧩 Niveau ~~ – Le Sommet des Étoiles",
-        "etape": "📍 Étape 5 : La Dalle des Anciens",
-        "lore": "📜 Une tablette sacrée repose au sommet du Mont Seraph. Elle ne s'ouvre que si les 4 anciens mots sont activés, mais leurs clefs ont été séparées à travers les âges. L'un de vous détient le mot, un autre la fonction de décodage incomplète, un autre les bons ingrédients à injecter, et le dernier doit l'exécuter en connaissant le nom sacré à reconstituer.",
-        "mechanics": "🧠 Chaque joueur détient une portion de logique ou de valeur liée au mot final. Seul le travail d'équipe permet de reconstituer le nom sacré complet.",
+        "name": "🧩 Niveau ~~ – La Dalle des Anciens",
+        "etape": "📍 Étape 5 : Le Sommet des Étoiles",
+        "lore": "📜 Une tablette sacrée repose au sommet du Mont Seraph. Elle ne s’ouvre que si les 4 anciens mots sont activés, mais leurs clefs ont été séparées à travers les âges. L’un de vous détient le mot, un autre la fonction de décodage incomplète, un autre les bons ingrédients à injecter, et le dernier doit l’exécuter en connaissant le nom sacré à reconstituer.",
+        "mechanics": "🧠 Chaque joueur détient une portion de logique ou de valeur liée au mot final. Seul le travail d’équipe permet de reconstituer le nom sacré complet.",
         "objectif": "➡️ Révéler ensemble le mot : GuardianOfTheFrozenPeak.",
         "solution_strategy": [
           "Le joueur 1 connaît la réponse finale mais pas sa logique.",
@@ -190,36 +190,36 @@
           "Le joueur 3 possède le bon lien ('OfTheFrozen') dans un groupe de faux choix.",
           "Le joueur 4 assemble tout avec la bonne logique et valide la réponse."
         ],
-        "final_goal": "🔓 En combinant la fonction complète, le bon lien et les bons segments, l'équipe assemble le mot 'GuardianOfTheFrozenPeak'."
+        "final_goal": "🔓 En combinant la fonction complète, le bon lien et les bons segments, l’équipe assemble le mot 'GuardianOfTheFrozenPeak'."
       },
 
       "players": {
         "1": {
           "role": "Le Mot Silencieux",
           "code": "Mot sacré : GuardianOfTheFrozenPeak\n\nTu ne sais ni pourquoi ni comment... mais tu connais le mot final.",
-          "hint": "Tu détiens la vérité, mais tu ne peux ni l'expliquer, ni la justifier. Donne seulement le résultat final."
+          "hint": "Tu détiens un bout de la vérité, mais tu ne peux ni l’expliquer, ni la justifie, car ton cerveau est désorienté"
         },
 
         "2": {
           "role": "La Fonction Brisée",
           "code": "Formule : Guardian + ??? + Peak\n\nIl manque la clé centrale pour lier les morceaux.",
-          "hint": "La fonction est brisée. Une pièce centrale manque à l'appel. Tu ne peux deviner seul ce que tu ignores."
+          "hint": "La fonction est brisée. Une pièce centrale manque à l’appel. Tu ne peux deviner seul ce que tu ignores."
         },
 
         "3": {
           "role": "Le Porteur des Fragments",
-          "code": "Fragments proposés : 'OfTheFrozen', '_', 'AndThen', 'GuardOfIce'\n\nUn seul d'entre eux est un lien sacré fiable.",
-          "hint": "Parmi ces fragments, un seul fait l'union parfaite. Mais le faux brille parfois plus fort que le vrai."
+          "code": "Fragments proposés : 'OfTheFrozen', '_', 'AndThen', 'GuardOfIce'\n\nUn seul d’entre eux est un lien sacré fiable.",
+          "hint": "Parmi ces fragments, un seul fait l’union parfaite. Mais le faux brille parfois plus fort que le vrai."
         },
 
         "4": {
-          "role": "L'Assembleur Sacré",
-          "code": "Équation complète : Guardian + OfTheFrozen + Peak\n\nTu peux assembler le tout si tu obtiens le bon lien.",
-          "hint": "Tu as la capacité d'exécuter le mot final. Mais sans les autres, tu n'aurais jamais su comment l'écrire."
+          "role": "L’Assembleur Sacré",
+          "code": "Équation complète : Guardian + Peak + OfThe + Frozen \n\nTu peux assembler le tout si tu obtiens le bon lien.",
+          "hint": "Tu as la capacité d’exécuter le mot final. Mais sans les autres, tu n’aurais jamais su comment l’écrire."
         }
       },
 
       "response": "GuardianOfTheFrozenPeak"
     }
   ]
-} 
+}
